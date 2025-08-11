@@ -1,0 +1,20 @@
+# Ignora o token e outros dados sensíveis
+*.token
+*.env
+BOT_TOKEN
+
+# Ignora arquivos Python compilados
+__pycache__/
+*.pyc
+
+# Ignora pastas de ambiente virtual
+venv/
+env/
+
+# Ignora arquivos do sistema
+.DS_Store
+*.log
+
+# Ignora arquivos temporários
+*.tmp
+*.bak
