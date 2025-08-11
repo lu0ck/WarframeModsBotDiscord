@@ -188,7 +188,8 @@ async def send_daily_message():
 
 # adiciona jobs (dois horários como no seu original)
 scheduler.add_job(send_daily_message, "cron", hour=6, minute=0)
-scheduler.add_job(send_daily_message, "cron", hour=12, minute=10)
+scheduler.add_job(send_daily_message, "cron", hour=12, minute=0)
+scheduler.add_job(send_daily_message, "cron", hour=18, minute=0)
 
 
 
