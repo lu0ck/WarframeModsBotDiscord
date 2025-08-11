@@ -1,0 +1,5 @@
+discord.py
+aiohttp
+apscheduler
+pytz
+python-dotenv
