@@ -17,7 +17,7 @@ load_dotenv()  # Carrega variáveis de ambiente do arquivo .env
 BOT_TOKEN =  os.getenv("BOT_TOKEN")  # Obtém o token da variável de ambiente
 COMMAND_PREFIX = "!"
 YOUR_CHANNEL_ID = 1404116804158361653  # ID do canal (int)
-YOUR_GUILD_ID = 854110417965678632     # (mantive, caso queira usar depois)
+YOUR_GUILD_ID = os.getenv("YOUR_GUILD_ID")    
 API_BASE_URL = "https://api.warframe.market/v1"
 
 # ===== INTENTS / BOT =====
@@ -25,7 +25,7 @@ intents = discord.Intents.default()
 intents.message_content = True  # necessário para ler mensagens no chat
 bot = commands.Bot(command_prefix=COMMAND_PREFIX, intents=intents)
 
-# ===== MAPA DOS SINDICATOS (mantive o seu) =====
+# ===== MAPA DOS SINDICATOS (INCOMPLETO) =====
 SYNDICATE_MODS = {
     "vilcor_nekralisck": [
         "bhisaj_bal", "damzav_vati", "hata_satya", "zazvat_kar"
@@ -109,7 +109,24 @@ SYNDICATE_MODS = {
         "repelling_bastille", "photon_repeater", "fused_reservoir", "critical_surge",
         "cataclysmic_gate", "vampiric_grasp", "the_relentless_lost",
         "merulina_guardian", "loyal_merulina", "surging_blades"
-    ]
+    ],
+    "new_loka": [
+        "abating_link","airbust_rounds","anchored_glide","assimilate","axios_javelineers",
+        "beguiling_lantern","bright_purit","calm_and_frenzy","cataclysmic_gate","celestial_stomp",
+        "champions_blessing","chaos_sphere","conductor","counter_pulse",
+        "critical_surge","disarming_purity","duality","elusive_retribution","endless_lullaby",
+        "ernergy_transfer","enraged","enveloping_cloud","eternal_war","fracturing_crush",
+        "funnel_clouds","fused_reservoir","greed_pull","hallowed_eruption","hallowed_reckoning",
+        "hysterical_assault","intrepid_stand","ironclad_flight","jet_stream","lasting_purity",
+        "loyal_merulina","magnetized_discharge","mending_splinters","merulinia_guardian",
+        "mind_freak","omikujis_fortune","pacifying_bolts","partitioned_mallet","peaceful_provocation",
+        "phoenix_renewal","pilfering_swarm","pool_of_life","primal_rage","prolonged_paralysis",
+        "razorwing_blitz","reactive_stormi","rousing_plunder","shattered_storm","smite_infusion",
+        "spectrosiphon","spectrosiphon","spellbound_harvest","sunging_blades","swift_bite",
+        "swift_line","target_fixation","tidal_impunity","valence_formation","vampire_leech",
+        "viral_tempest","volatile_recompense","winds_of_purity","wrath_of_ukko"
+        ]
+    
 }
 
 # ===== Funções de consulta =====
