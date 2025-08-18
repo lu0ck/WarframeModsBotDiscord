@@ -128,21 +128,21 @@ SYNDICATE_MODS = {
         "merulina_guardian", "loyal_merulina", "surging_blades"
     ],
     "new_loka": [
-        "abating_link","airbust_rounds","anchored_glide","assimilate","axios_javelineers",
-        "beguiling_lantern","bright_purit","calm_and_frenzy","cataclysmic_gate","celestial_stomp",
-        "champions_blessing","chaos_sphere","conductor","counter_pulse",
-        "critical_surge","disarming_purity","duality","elusive_retribution","endless_lullaby",
-        "ernergy_transfer","enraged","enveloping_cloud","eternal_war","fracturing_crush",
-        "funnel_clouds","fused_reservoir","greed_pull","hallowed_eruption","hallowed_reckoning",
-        "hysterical_assault","intrepid_stand","ironclad_flight","jet_stream","lasting_purity",
-        "loyal_merulina","magnetized_discharge","mending_splinters","merulinia_guardian",
-        "mind_freak","omikujis_fortune","pacifying_bolts","partitioned_mallet","peaceful_provocation",
-        "phoenix_renewal","pilfering_swarm","pool_of_life","primal_rage","prolonged_paralysis",
-        "razorwing_blitz","reactive_stormi","rousing_plunder","shattered_storm","smite_infusion",
-        "spectrosiphon","spectrosiphon","spellbound_harvest","sunging_blades","swift_bite",
-        "swift_line","target_fixation","tidal_impunity","valence_formation","vampire_leech",
-        "viral_tempest","volatile_recompense","winds_of_purity","wrath_of_ukko"
-        ]
+        "abating_link", "airbust_rounds", "anchored_glide", "assimilate", "axios_javelineers",
+        "beguiling_lantern", "bright_purity", "calm_and_frenzy", "cataclysmic_gate", "celestial_stomp",
+        "champions_blessing", "chaos_sphere", "conductor", "counter_pulse",
+        "critical_surge", "disarming_purity", "duality", "elusive_retribution", "endless_lullaby",
+        "energy_transfer", "enraged", "enveloping_cloud", "eternal_war", "fracturing_crush",
+        "funnel_clouds", "fused_reservoir", "greed_pull", "hallowed_eruption", "hallowed_reckoning",
+        "hysterical_assault", "intrepid_stand", "ironclad_flight", "jet_stream", "lasting_purity",
+        "loyal_merulina", "magnetized_discharge", "mending_splinters", "merulina_guardian",
+        "mind_freak", "omikuji's_fortune", "pacifying_bolts", "partitioned_mallet", "peaceful_provocation",
+        "phoenix_renewal", "pilfering_swarm", "pool_of_life", "primal_rage", "prolonged_paralysis",
+        "razorwing_blitz", "reactive_storm", "rousing_plunder", "shattered_storm", "smite_infusion",
+        "spectrosiphon", "spellbound_harvest", "surging_blades", "swift_bite",
+        "swift_line", "target_fixation", "tidal_impunity", "valence_formation", "vampire_leech",
+        "viral_tempest", "volatile_recompense", "winds_of_purity", "wrath_of_ukko"
+    ]
 }
 
 # ===== Funções de consulta =====
@@ -225,7 +225,7 @@ async def send_daily_message():
             except Exception as e:
                 print(f"[send_daily_message] Erro ao processar {syndicate} para guild {guild_id}: {e}")
 
-# adiciona jobs (dois horários como no seu original)
+# adiciona jobs (três horários)
 scheduler.add_job(send_daily_message, "cron", hour=6, minute=0)
 scheduler.add_job(send_daily_message, "cron", hour=12, minute=0)
 scheduler.add_job(send_daily_message, "cron", hour=18, minute=0)
@@ -240,6 +240,33 @@ async def on_ready():
     # Inicia o scheduler só depois do bot estar pronto
     scheduler.start()
     print("Scheduler iniciado")
+
+@bot.event
+async def on_guild_join(guild):
+    # Envia mensagem de boas-vindas no canal padrão do servidor
+    default_channel = guild.system_channel
+    if default_channel and default_channel.permissions_for(guild.me).send_messages:
+        embed = discord.Embed(
+            title="🎉 Bem-vindo ao Warframe Mods Bot! 🎉",
+            description="Olá! Eu sou o Warframe Mods Bot, criado para ajudar você a encontrar os mods mais caros de Warframe! 😄",
+            color=0x00ff00,
+            timestamp=datetime.utcnow()
+        )
+        embed.add_field(
+            name="🔍 Veja o Código Fonte",
+            value="Quer ver como eu fui feito? Confira meu repositório no GitHub! [Clique aqui](https://github.com/lu0ck/WarframeModsBotDiscord)",
+            inline=False
+        )
+        embed.add_field(
+            name="💖 Apoie o Criador",
+            value="Gostou do bot? Considere apoiar o criador visitando o GitHub ou deixando um feedback! 🌟",
+            inline=False
+        )
+        embed.set_footer(text="Obrigado por me adicionar! Use !ajuda para começar.")
+        embed.set_thumbnail(url="https://warframe.com/assets/images/logo.png")  # Logo do Warframe como exemplo
+        await default_channel.send(embed=embed)
+    else:
+        print(f"[on_guild_join] Não foi possível enviar mensagem de boas-vindas no servidor {guild.name} (ID: {guild.id})")
 
 @bot.event
 async def on_message(message):
