@@ -10,23 +10,39 @@ from datetime import datetime
 from collections import defaultdict
 import uuid
 from datetime import timezone
-
+import json  # Adicionado para gerenciar config.json
 
 load_dotenv()  # Carrega variáveis de ambiente do arquivo .env
 
 # ========== CONFIG ==========
-BOT_TOKEN =  os.getenv("BOT_TOKEN")  # Obtém o token da variável de ambiente
+BOT_TOKEN = os.getenv("BOT_TOKEN")  # Obtém o token da variável de ambiente
 COMMAND_PREFIX = "!"
-YOUR_CHANNEL_ID = 1404116804158361653  # ID do canal (int)
-YOUR_GUILD_ID = os.getenv("YOUR_GUILD_ID")    
 API_BASE_URL = "https://api.warframe.market/v1"
+
+# Arquivo para armazenar configurações (canais por servidor)
+CONFIG_FILE = "config.json"
+
+# Carrega configurações de canal (dicionário {guild_id: channel_id})
+def load_config():
+    try:
+        with open(CONFIG_FILE, "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {"channels": {}}
+
+# Salva configurações
+def save_config(config):
+    with open(CONFIG_FILE, "w") as f:
+        json.dump(config, f, indent=4)
+
+config = load_config()
 
 # ===== INTENTS / BOT =====
 intents = discord.Intents.default()
 intents.message_content = True  # necessário para ler mensagens no chat
 bot = commands.Bot(command_prefix=COMMAND_PREFIX, intents=intents)
 
-# ===== MAPA DOS SINDICATOS (INCOMPLETO) =====
+# ===== MAPA DOS SINDICATOS (mantive o seu) =====
 SYNDICATE_MODS = {
     "vilcor_nekralisck": [
         "bhisaj_bal", "damzav_vati", "hata_satya", "zazvat_kar"
@@ -49,7 +65,7 @@ SYNDICATE_MODS = {
         "adaptation", "aerial_ace", "aerodynamic", "cautious_shot", "combat_discipline",
         "energizing_shot", "galvanized_acceleration", "galvanized_aptitude",
         "galvanized_chamber", "galvanized_crosshairs", "galvanized_diffusion",
-        "galvanized_elementalist", "galvanized_hell", "galvanized_reflex",
+        "galvanized_elementalist", "galvanized_hell", "galvanized_reclex",
         "galvanized_savvy", "galvanized_scope", "galvanized_shot", "galvanized_steel",
         "melee_guidance", "mending_shot", "power_donation", "preparation",
         "rolling_guard", "sharpshooter", "shepherd", "swift_momentum", "vigorous_swap"
@@ -127,7 +143,6 @@ SYNDICATE_MODS = {
         "swift_line","target_fixation","tidal_impunity","valence_formation","vampire_leech",
         "viral_tempest","volatile_recompense","winds_of_purity","wrath_of_ukko"
         ]
-    
 }
 
 # ===== Funções de consulta =====
@@ -184,32 +199,36 @@ def format_mods_embed(syndicate, mods, title):
         )
     return embed
 
-# ===== Scheduler (mantive o seu) =====
+# ===== Scheduler (adaptado para canais dinâmicos) =====
 scheduler = AsyncIOScheduler(timezone=pytz.timezone("America/Sao_Paulo"))
 
 async def send_daily_message():
-    channel = bot.get_channel(YOUR_CHANNEL_ID)
-    if not channel:
-        print("[send_daily_message] Canal não encontrado")
-        return
+    global config
+    channels = config.get("channels", {})
+    for guild_id, channel_id in channels.items():
+        guild = bot.get_guild(int(guild_id))
+        if not guild:
+            continue
+        channel = guild.get_channel(int(channel_id))
+        if not channel:
+            print(f"[send_daily_message] Canal não encontrado para guild {guild_id}")
+            continue
 
-    for syndicate in SYNDICATE_MODS.keys():
-        try:
-            mods = await get_top_mods(syndicate, limit=5)
-            if mods:
-                title = f"Top 5 Mods Mais Caros para {syndicate.replace('_', ' ').title()} - Atualizado"
-                embed = format_mods_embed(syndicate, mods, title)
-                await channel.send(embed=embed)
-            await asyncio.sleep(1)  # evita burst
-        except Exception as e:
-            print(f"[send_daily_message] Erro ao processar {syndicate}: {e}")
+        for syndicate in SYNDICATE_MODS.keys():
+            try:
+                mods = await get_top_mods(syndicate, limit=5)
+                if mods:
+                    title = f"Top 5 Mods Mais Caros para {syndicate.replace('_', ' ').title()} - Atualizado"
+                    embed = format_mods_embed(syndicate, mods, title)
+                    await channel.send(embed=embed)
+                await asyncio.sleep(1)  # evita burst
+            except Exception as e:
+                print(f"[send_daily_message] Erro ao processar {syndicate} para guild {guild_id}: {e}")
 
 # adiciona jobs (dois horários como no seu original)
 scheduler.add_job(send_daily_message, "cron", hour=6, minute=0)
 scheduler.add_job(send_daily_message, "cron", hour=12, minute=0)
 scheduler.add_job(send_daily_message, "cron", hour=18, minute=0)
-
-
 
 # ===== LOGS / EVENTOS =====
 @bot.event
@@ -252,9 +271,22 @@ async def ping(ctx):
 
 @bot.command(name="ajuda", aliases=["socorro"])
 async def ajuda(ctx):
-    cmds = [f"`{COMMAND_PREFIX}{c.name}`" for c in bot.commands]
-    texto = "📌 Comandos disponíveis:\n" + "\n".join(cmds)
-    await ctx.send(texto)
+    # Lista todos os comandos com descrições breves
+    comandos = {
+        "ping": "Testa se o bot está online (responde 'Pong!').",
+        "ajuda": "Mostra esta lista de comandos (alias: !socorro).",
+        "top": "Mostra os 5 mods mais caros entre todos os sindicatos.",
+        "setchannel": "Define o canal para mensagens diárias automáticas (ex: !setchannel #canal). Requer permissões de admin."
+    }
+    # Adiciona comandos dinâmicos de sindicatos
+    for syndicate in SYNDICATE_MODS.keys():
+        cmd_name = syndicate
+        comandos[cmd_name] = f"Mostra os 3 mods mais caros para {syndicate.replace('_', ' ').title()} (alias: !{syndicate.replace('_', '-')} )."
+
+    embed = discord.Embed(title="📌 Lista de Comandos Disponíveis", color=0x00ff00)
+    for cmd, desc in comandos.items():
+        embed.add_field(name=f"{COMMAND_PREFIX}{cmd}", value=desc, inline=False)
+    await ctx.send(embed=embed)
 
 @bot.command(name="top")
 async def top_mods(ctx):
@@ -299,6 +331,18 @@ async def top_mods(ctx):
     embed.set_thumbnail(url=top_5[0]["image_url"])  # thumbnail com mod mais caro
     await ctx.send(embed=embed)
 
+# Novo comando para definir o canal (requer admin)
+@bot.command(name="setchannel")
+@commands.has_permissions(administrator=True)
+async def set_channel(ctx, channel: discord.TextChannel):
+    global config
+    guild_id = str(ctx.guild.id)
+    channel_id = str(channel.id)
+    if "channels" not in config:
+        config["channels"] = {}
+    config["channels"][guild_id] = channel_id
+    save_config(config)
+    await ctx.send(f"✅ Canal para mensagens diárias definido como {channel.mention} para este servidor!")
 
 # ===== CRIA COMANDOS DINAMICAMENTE PARA CADA SINDICATO =====
 # Permite !cephalon_suda e também !cephalon-suda (alias)
