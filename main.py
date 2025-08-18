@@ -225,10 +225,11 @@ async def send_daily_message():
             except Exception as e:
                 print(f"[send_daily_message] Erro ao processar {syndicate} para guild {guild_id}: {e}")
 
-# adiciona jobs (três horários)
+# adiciona jobs 
 scheduler.add_job(send_daily_message, "cron", hour=6, minute=0)
 scheduler.add_job(send_daily_message, "cron", hour=12, minute=0)
 scheduler.add_job(send_daily_message, "cron", hour=18, minute=0)
+scheduler.add_job(send_daily_message, "cron", hour=0, minute=0)
 
 # ===== LOGS / EVENTOS =====
 @bot.event
@@ -259,11 +260,11 @@ async def on_guild_join(guild):
         )
         embed.add_field(
             name="💖 Apoie o Criador",
-            value="Gostou do bot? Considere apoiar o criador visitando o GitHub ou deixando um feedback! 🌟",
+            value="Gostou do bot? Considere apoiar o criador visitando o GitHub e deixando um feedback! 🌟",
             inline=False
         )
         embed.set_footer(text="Obrigado por me adicionar! Use !ajuda para começar.")
-        embed.set_thumbnail(url="https://warframe.com/assets/images/logo.png")  # Logo do Warframe como exemplo
+        embed.set_thumbnail(url="https://encurtador.com.br/kspwQ")  # Logo do Warframe 
         await default_channel.send(embed=embed)
     else:
         print(f"[on_guild_join] Não foi possível enviar mensagem de boas-vindas no servidor {guild.name} (ID: {guild.id})")
