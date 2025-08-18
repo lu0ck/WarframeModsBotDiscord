@@ -11,6 +11,7 @@ from collections import defaultdict
 import uuid
 from datetime import timezone
 
+
 load_dotenv()  # Carrega variáveis de ambiente do arquivo .env
 
 # ========== CONFIG ==========
@@ -48,7 +49,7 @@ SYNDICATE_MODS = {
         "adaptation", "aerial_ace", "aerodynamic", "cautious_shot", "combat_discipline",
         "energizing_shot", "galvanized_acceleration", "galvanized_aptitude",
         "galvanized_chamber", "galvanized_crosshairs", "galvanized_diffusion",
-        "galvanized_elementalist", "galvanized_hell", "galvanized_reclex",
+        "galvanized_elementalist", "galvanized_hell", "galvanized_reflex",
         "galvanized_savvy", "galvanized_scope", "galvanized_shot", "galvanized_steel",
         "melee_guidance", "mending_shot", "power_donation", "preparation",
         "rolling_guard", "sharpshooter", "shepherd", "swift_momentum", "vigorous_swap"
