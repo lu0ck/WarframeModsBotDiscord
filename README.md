@@ -64,6 +64,9 @@ Sinta-se à vontade para fazer um fork deste repositório, sugerir melhorias e e
 ## Licença
 PRIVADO
 
+## Aviso
+Ainda nao contem todos os mods e sindicatos, caso alguem queira fazer sinta-se livre, farei com o passar do tempo e quando liberar tudo no jogo.
+
 ## Agradecimentos
 - API do Warframe Market por fornecer os dados de preços dos mods.
 - Comunidade Discord.py por suporte.
@@ -133,6 +136,9 @@ Feel free to fork this repository, make improvements, and submit pull requests. 
 
 ## License
 PRIVATE
+
+## Notice
+It still doesn't contain all the mods and unions, if anyone wants to do it feel free, I will do it over time and when I release everything in the game.
 
 ## Acknowledgments
 - Warframe Market API for providing mod price data.
