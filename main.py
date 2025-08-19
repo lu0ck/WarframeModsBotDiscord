@@ -221,7 +221,7 @@ async def send_daily_message():
                     title = f"Top 5 Mods Mais Caros para {syndicate.replace('_', ' ').title()} - Atualizado"
                     embed = format_mods_embed(syndicate, mods, title)
                     await channel.send(embed=embed)
-                await asyncio.sleep(1)  # evita burst
+                await asyncio.sleep(0,8)  # evita burst
             except Exception as e:
                 print(f"[send_daily_message] Erro ao processar {syndicate} para guild {guild_id}: {e}")
 
@@ -229,7 +229,7 @@ async def send_daily_message():
 scheduler.add_job(send_daily_message, "cron", hour=6, minute=0)
 scheduler.add_job(send_daily_message, "cron", hour=12, minute=0)
 scheduler.add_job(send_daily_message, "cron", hour=18, minute=0)
-scheduler.add_job(send_daily_message, "cron", hour=0, minute=0)
+scheduler.add_job(send_daily_message, "cron", hour=0, minute=1)
 
 # ===== LOGS / EVENTOS =====
 @bot.event
